@@ -1,0 +1,2 @@
+This directory will contain the machine learning model file (rf2_model.pkl).
+Place your model file in this directory before running the application.

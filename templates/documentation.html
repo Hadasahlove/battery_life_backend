@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}API Documentation - RUL Predictor{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 class="card-title">
+        <i class="fas fa-book"></i> API Documentation
+    </h2>
+    <p class="mb-4">
+        This page documents the REST API endpoints available for making RUL predictions programmatically.
+    </p>
+
+    <div class="mb-6">
+        <h3 class="mb-2" style="color: var(--color-text-primary);">Predict Endpoint</h3>
+        <div style="background-color: var(--color-neutral-100); padding: var(--space-4); border-radius: var(--radius-md);">
+            <div class="detail-item">
+                <span class="detail-label">URL:</span>
+                <span class="detail-value" style="font-family: monospace;">/api/predict</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Method:</span>
+                <span class="detail-value" style="font-family: monospace;">POST</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Content-Type:</span>
+                <span class="detail-value" style="font-family: monospace;">application/json</span>
+            </div>
+        </div>
+        
+        <h4 class="mt-4 mb-2" style="color: var(--color-text-primary);">Request Body</h4>
+        <pre style="background-color: var(--color-neutral-100); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-family: monospace; margin: 0;">
+{
+  "Re": 1.0,  // Ohmic resistance (Ω)
+  "Rct": 2.0  // Charge transfer resistance (Ω)
+}
+        </pre>
+        
+        <h4 class="mt-4 mb-2" style="color: var(--color-text-primary);">Response (200 OK)</h4>
+        <pre style="background-color: var(--color-neutral-100); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-family: monospace; margin: 0;">
+{
+  "predicted_RUL": 1200.5,  // Predicted remaining useful life (cycles)
+  "input": {
+    "Re": 1.0,              // Input ohmic resistance
+    "Rct": 2.0,             // Input charge transfer resistance
+    "degradation": 2.0      // Calculated degradation factor (Re * Rct)
+  }
+}
+        </pre>
+        
+        <h4 class="mt-4 mb-2" style="color: var(--color-text-primary);">Error Response (400 Bad Request)</h4>
+        <pre style="background-color: var(--color-neutral-100); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-family: monospace; margin: 0;">
+{
+  "error": "Please provide both Re and Rct values"
+}
+        </pre>
+    </div>
+
+    <div class="mb-6">
+        <h3 class="mb-2" style="color: var(--color-text-primary);">Model Info Endpoint</h3>
+        <div style="background-color: var(--color-neutral-100); padding: var(--space-4); border-radius: var(--radius-md);">
+            <div class="detail-item">
+                <span class="detail-label">URL:</span>
+                <span class="detail-value" style="font-family: monospace;">/api/model-info</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Method:</span>
+                <span class="detail-value" style="font-family: monospace;">GET</span>
+            </div>
+        </div>
+        
+        <h4 class="mt-4 mb-2" style="color: var(--color-text-primary);">Response (200 OK)</h4>
+        <pre style="background-color: var(--color-neutral-100); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-family: monospace; margin: 0;">
+{
+  "status": "Loaded",
+  "type": "RandomForestRegressor",
+  "features": 1
+}
+        </pre>
+    </div>
+
+    <h3 class="mb-2" style="color: var(--color-text-primary);">Example Usage</h3>
+    <pre style="background-color: var(--color-neutral-100); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-family: monospace; margin: 0;">
+# Python example
+import requests
+import json
+
+url = "http://localhost:5000/api/predict"
+data = {
+    "Re": 1.0,
+    "Rct": 2.0
+}
+
+response = requests.post(url, json=data)
+print(json.dumps(response.json(), indent=2))
+    </pre>
+</div>
+
+<div class="card">
+    <h2 class="card-title">
+        <i class="fas fa-plug"></i> Integration Options
+    </h2>
+    <p>
+        The RUL Predictor API can be easily integrated with various systems, including:
+    </p>
+    <ul style="list-style-type: disc; margin-left: var(--space-6); margin-top: var(--space-2);">
+        <li>Battery Management Systems (BMS)</li>
+        <li>IoT devices for battery monitoring</li>
+        <li>Electric vehicle diagnostics tools</li>
+        <li>Renewable energy storage management systems</li>
+        <li>Mobile apps for battery health monitoring</li>
+    </ul>
+    <p class="mt-4">
+        For custom integration needs or questions, please contact the system administrator.
+    </p>
+</div>
+{% endblock %}

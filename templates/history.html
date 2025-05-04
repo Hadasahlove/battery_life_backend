@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction History - RUL Predictor{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 class="card-title">
+        <i class="fas fa-history"></i> Prediction History
+    </h2>
+    <p class="mb-4">
+        Your recent battery RUL predictions are stored locally on your device. No data is sent to any server.
+    </p>
+    
+    <div id="history-list">
+        <!-- History items will be loaded via JavaScript -->
+        <div class="text-center">
+            <div class="spinner"></div>
+            <p class="mt-2">Loading history...</p>
+        </div>
+    </div>
+    
+    <div class="text-center mt-6">
+        <button id="clear-history-btn" class="btn-secondary">
+            <i class="fas fa-trash"></i> Clear History
+        </button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const clearHistoryBtn = document.getElementById('clear-history-btn');
+        
+        if (clearHistoryBtn) {
+            clearHistoryBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear your prediction history?')) {
+                    localStorage.removeItem('predictionHistory');
+                    loadHistory();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
