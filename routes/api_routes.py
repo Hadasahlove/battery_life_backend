@@ -11,6 +11,7 @@ rul_cache = {}
 @api_bp.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
+    print("Received data:", data) 
     re = data.get('Re')
     rct = data.get('Rct')
 
@@ -23,11 +24,12 @@ def predict():
     except ValueError:
         return jsonify({'status': 'error', 'message': 'Re and Rct must be numbers'}), 400
 
+    # Calculate degradation and predicted RUL
     degradation_feature = re * rct
-    predicted_rul = 1000 / (degradation_feature + 1)
+    predicted_RUL = 1000 / ((degradation_feature + 1) ** 3)  # Cubic penalty formula
 
-    # Store in cache
-    rul_cache['predicted_RUL'] = predicted_rul
+    # Store RUL for later use in lifespan calculation
+    rul_cache['predicted_RUL'] = predicted_RUL
 
     return jsonify({
         'status': 'success',
@@ -35,7 +37,7 @@ def predict():
         'Re': re,
         'Rct': rct,
         'degradation_feature': round(degradation_feature, 5),
-        'predicted_RUL': round(predicted_rul, 2)
+        'predicted_RUL': round(predicted_RUL, 2)
     })
 
 
@@ -54,14 +56,14 @@ def battery_life_years():
             'message': 'Please provide valid mileage_per_cycle and average_daily_mileage.'
         }), 400
 
-    predicted_rul = rul_cache['predicted_RUL']
-    total_mileage = predicted_rul * mileage_per_cycle
+    predicted_RUL = rul_cache['predicted_RUL']
+    total_mileage = predicted_RUL * mileage_per_cycle
     estimated_life_years = total_mileage / (average_daily_mileage * 365)
 
     return jsonify({
         'status': 'success',
         'message': 'Battery lifespan estimated using cached RUL.',
-        'predicted_RUL': round(predicted_rul, 2),
+        'predicted_RUL': round(predicted_RUL, 2),
         'mileage_per_cycle': mileage_per_cycle,
         'average_daily_mileage': average_daily_mileage,
         'total_mileage': round(total_mileage, 2),
